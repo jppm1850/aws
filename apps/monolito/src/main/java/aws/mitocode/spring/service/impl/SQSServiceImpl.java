@@ -35,11 +35,11 @@ public class SQSServiceImpl implements IColaSQSService {
     	try {
     		logger.info("JSON SQS: "+json);
     		
-    		//SNSMessage mensajeSNS = mapper.readValue(json, SNSMessage.class);
+    		SNSMessage mensajeSNS = mapper.readValue(json, SNSMessage.class);
     		
-			//FeedBack feedback = mapper.readValue(mensajeSNS.getMessage(), FeedBack.class);
+			FeedBack feedback = mapper.readValue(mensajeSNS.getMessage(), FeedBack.class);
 			
-			FeedBack feedback = mapper.readValue(json, FeedBack.class);
+			//FeedBack feedback = mapper.readValue(json, FeedBack.class);
     		
     		logger.info("Received " + feedback.getIdUsuario() + " | "+feedback.getMensaje());
     		
