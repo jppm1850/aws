@@ -115,5 +115,27 @@
         }
     },
     "Outputs": {
+        "datosRedPrivada" : {
+            "Description":"id de la red privada 1",
+            "Value":{
+                "Ref":"miRedPrivada"
+            },
+            "Export":{"Name":"miRedPrivada"}
+        },
+        "datosRedPrivada2" : {
+                "Description":"id de la red privada 2",
+                "Value":{
+                    "Ref":"miRedPrivada2"
+                },
+                "Export":{"Name":"miRedPrivada2"}
+        },
+        "idVpc" : {
+            "Description":"VPC Curso",
+            "Value":{
+                "Ref":"miVpcCurso"
+            },
+            "Export":{"Name":"miVpcCurso"}
+    }
+
     }
 }
