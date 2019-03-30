@@ -1,0 +1,23 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Database",
+    "Metadata": {},
+    "Parameters": {
+
+    },
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "dbSubnetGroup" : {
+            "Type" : "AWS::RDS::DBSubnetGroup",
+            "Properties" : {
+               "DBSubnetGroupDescription" : "redes privadas de la vpc",
+               "SubnetIds" : [
+                   {"Fn::ImportValue": "miRedPrivada"},
+                   {"Fn::ImportValue": "miRedPrivada2"}
+                ]
+            }
+         }
+    },
+    "Outputs": {}
+}

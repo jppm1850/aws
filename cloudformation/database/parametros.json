@@ -1,0 +1,10 @@
+[
+    {
+      "ParameterKey": "ClaveSSH",
+      "ParameterValue": "acceso.default"
+    },
+    {
+      "ParameterKey": "myVPC",
+      "ParameterValue": "vpc-48318a32"
+    }
+  ]
