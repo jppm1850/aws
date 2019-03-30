@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>{{data.local.negocio.nombre}}</h2>
+<h4 mat-dialog-title>{{data.local.nombre}}</h4>
+<mat-dialog-content>
+    <mat-list role="list" *ngFor="let servicio of data.local.tiposServicios">
+        <mat-list-item role="listitem">{{servicio.descripcion}}</mat-list-item>
+        <mat-divider></mat-divider>
+    </mat-list>
+</mat-dialog-content>

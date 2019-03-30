@@ -1,0 +1,53 @@
+<mat-progress-bar mode="indeterminate" *ngIf="mostrarLoading"></mat-progress-bar>
+
+<div class="example-container">
+  <mat-grid-list cols="10" rowHeight="75px">
+    <mat-grid-tile [colspan]="'9'">
+      <mat-form-field class="example-full-width">
+        <mat-select placeholder="Escoga un tipo de negocio" disableRipple name="tipoNegocio.id" [(ngModel)]="tipoNegocio.id" (selectionChange)="mostrarNegocios()">
+          <mat-option>--Seleccione--</mat-option>
+          <mat-option *ngFor="let tipo of tiposNegocios" [value]="tipo.id">
+            {{tipo.descripcion}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile [colspan]="'1'">
+      <button mat-icon-button (click)="actualizarUbicacion()">
+        <mat-icon>my_location</mat-icon>
+      </button>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
+
+
+<agm-map [latitude]="miMarker.latitud" [longitude]="miMarker.longitud" [zoom]="zoom" [disableDefaultUI]="false" [zoomControl]="false">
+
+  <agm-marker [latitude]="miMarker.latitud" [longitude]="miMarker.longitud" [label]="miMarker.nombre"></agm-marker>
+
+  <agm-marker *ngFor="let local of locales; let i = index" [latitude]="local.latitud"
+    [longitude]="local.longitud" [label]="local.negocio.nombre">
+
+    <agm-info-window>
+      <mat-card class="example-card">
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image">
+            <button mat-icon-button (click)="openDialog(local)" style="cursor: pointer">
+              <mat-icon>search</mat-icon>
+            </button>
+          </div>
+          <mat-card-title>
+            {{local.negocio.nombre}}
+          </mat-card-title>
+          <mat-card-subtitle>{{local.nombre}}</mat-card-subtitle>
+        </mat-card-header>
+      </mat-card>
+    </agm-info-window>
+
+  </agm-marker>
+
+  <agm-marker *ngIf="miMarker !== undefined" [latitude]="miMarker.latitud" [longitude]="miMarker.longitud" [label]="miMarker.nombre">
+
+  </agm-marker>
+
+</agm-map>

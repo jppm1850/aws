@@ -1,0 +1,22 @@
+<div class="main-div">
+  <mat-card class="example-card center">
+    <mat-card-header class="centerContent">
+      <mat-card-title>Login App Curso JAWS</mat-card-title>
+    </mat-card-header>
+    <form #myform="ngForm" class="example-form" (ngSubmit)="onSubmit()">
+      <mat-card-content>
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="Username" [(ngModel)]="login.username" name="login.username" required>
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="Password" [(ngModel)]="login.password" type="password" name="login.password"
+            required>
+        </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button type="submit" mat-raised-button [disabled]="myform.invalid" color="primary">Login</button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</div>

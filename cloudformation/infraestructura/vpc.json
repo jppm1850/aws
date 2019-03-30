@@ -1,0 +1,119 @@
+{
+"AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "VPC Curso",
+    "Metadata": {
+    },
+    "Parameters": {
+    },
+    "Mappings": {
+    },
+    "Conditions": {
+    },
+    "Resources": {
+         "miVpcCurso" : {
+            "Type" : "AWS::EC2::VPC",
+            "Properties" : {
+               "CidrBlock" : "10.0.0.0/16",
+               "EnableDnsSupport" : "true",
+               "EnableDnsHostnames" : "true",
+               "InstanceTenancy" : "default"
+            }
+        },
+        "myIG" : {
+            "Type" : "AWS::EC2::InternetGateway",
+            "Properties" : {}
+        },
+        "attachGateway" : {
+            "Type" : "AWS::EC2::VPCGatewayAttachment",
+            "Properties" : {
+               "VpcId" : { "Ref" : "miVpcCurso" },
+               "InternetGatewayId" : { "Ref" : "myIG" }
+            }
+        },
+        "miRedPublica" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+               "VpcId" : { "Ref" : "miVpcCurso" },
+               "CidrBlock" : "10.0.100.0/24",
+               "AvailabilityZone" : "us-east-1a",
+               "MapPublicIpOnLaunch": true
+            }
+        },
+        "miRedPublica2" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+               "VpcId" : { "Ref" : "miVpcCurso" },
+               "CidrBlock" : "10.0.200.0/24",
+               "AvailabilityZone" : "us-east-1b",
+               "MapPublicIpOnLaunch": true
+            }
+        },
+        "miRedPrivada" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+               "VpcId" : { "Ref" : "miVpcCurso" },
+               "CidrBlock" : "10.0.1.0/24",
+               "AvailabilityZone" : "us-east-1a"
+            }
+        },
+        "miRedPrivada2" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+               "VpcId" : { "Ref" : "miVpcCurso" },
+               "CidrBlock" : "10.0.2.0/24",
+               "AvailabilityZone" : "us-east-1b"
+            }
+        },
+        "miRouteTablePublico" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "Properties" : {
+               "VpcId" : { "Ref" : "miVpcCurso" }
+            }
+        },
+        "miRouteTablePrivado" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "Properties" : {
+               "VpcId" : { "Ref" : "miVpcCurso" }
+            }
+        },
+        "miSbRTPublico" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+               "SubnetId" : { "Ref" : "miRedPublica" },
+               "RouteTableId" : { "Ref" : "miRouteTablePublico" }
+            }
+        },
+        "miSbRTPublico2" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+               "SubnetId" : { "Ref" : "miRedPublica2" },
+               "RouteTableId" : { "Ref" : "miRouteTablePublico" }
+            }
+        },
+        "miSbRTPrivado" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+               "SubnetId" : { "Ref" : "miRedPrivada" },
+               "RouteTableId" : { "Ref" : "miRouteTablePrivado" }
+            }
+        },
+        "miSbRTPrivado2" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+               "SubnetId" : { "Ref" : "miRedPrivada2" },
+               "RouteTableId" : { "Ref" : "miRouteTablePrivado" }
+            }
+        },
+        "myRoute" : {
+            "Type" : "AWS::EC2::Route",
+            "DependsOn" : "myIG",
+            "Properties" : {
+               "RouteTableId" : { "Ref" : "miRouteTablePublico" },
+               "DestinationCidrBlock" : "0.0.0.0/0",
+               "GatewayId" : { "Ref" : "myIG" }
+            }
+        }
+    },
+    "Outputs": {
+    }
+}

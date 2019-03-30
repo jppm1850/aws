@@ -1,0 +1,20 @@
+.center {
+    width: 40%;
+    margin: 10px auto;
+}
+
+.main-div {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.example-full-width{
+    width: 100%;
+}
+
+.centerContent{
+    justify-content: center;
+}

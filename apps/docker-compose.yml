@@ -1,0 +1,42 @@
+version: '3.4'
+
+services:
+
+  mysql_server:
+    build: ./mysql_server/
+    image: wjma90/mysql_dummy:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=toor
+      - MYSQL_DATABASE=geoserviciosbd
+      - MYSQL_USER=app
+      - MYSQL_PASSWORD=toor
+      - MYSQL_ROOT_HOST=%
+    ports:
+      - "3310:3306"
+    volumes:
+      - my-data:/var/lib/mysql/
+    restart: on-failure
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci
+
+  monolito:
+    build: ./monolito/
+    image: wjma90/monolitico:latest
+    environment: 
+      - userPoolId=us-east-1_7h1DqbP3z
+      - host=mysql_server
+      - port=3306
+      - database=geoserviciosbd
+      - username=root
+      - password=toor
+      - clientId=664lbpp5kf8eb2j5duvkug0hpt
+      - AWS_ACCESS_KEY_ID=AKIAIAHJGFY5RDO62E3A
+      - AWS_SECRET_ACCESS_KEY=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
+    depends_on: 
+      - mysql_server
+    ports:
+      - "80:8080"
+    restart: on-failure
+    entrypoint: dockerize -wait tcp://mysql_server:3306 -timeout 10m java -jar /workspace/app.jar
+
+volumes:
+  my-data:

@@ -1,0 +1,35 @@
+<p *ngIf="data.dato.status == 'OK-UPDATE'">
+    Cuando ingresa por 1era vez, debe cambiar su contrase&ntilde;a
+</p>
+
+<p *ngIf="data.dato.status == 'OK-RESET'">
+    Actualice su password por favor
+</p>
+
+<p *ngIf="data.dato.status.indexOf('OK-') < 0">
+    {{data.error}}
+</p>
+
+<form *ngIf="data.dato.status == 'OK-UPDATE' " class="example-form">
+    <form #myform="ngForm" class="example-form" (ngSubmit)="onSubmit('OK-UPDATE')">
+  
+        <mat-form-field class="example-full-width">
+            <input matInput placeholder="New Password" [(ngModel)]="password"type="password" name="password" required>
+        </mat-form-field>
+  
+        <button type="submit" mat-fab color="primary" [disabled]="myform.invalid">Enviar</button>
+      </form>
+</form>
+
+<form *ngIf="data.dato.status == 'OK-RESET' " class="example-form">
+    <form #myform="ngForm" class="example-form" (ngSubmit)="onSubmit('OK-RESET')">
+        <mat-form-field class="example-full-width">
+            <input matInput placeholder="Verification Code" [(ngModel)]="datosChangePassword.verificationCode" type="password" name="datosChangePassword.verificationCode" required>
+        </mat-form-field>
+        <mat-form-field class="example-full-width">
+            <input matInput placeholder="New Password" [(ngModel)]="datosChangePassword.newPassword" type="password" name="datosChangePassword.newPassword" required>
+        </mat-form-field>
+      
+        <button type="submit" mat-fab color="primary" [disabled]="myform.invalid">Enviar</button>
+    </form>
+</form>

@@ -1,0 +1,21 @@
+<div class="example-container">
+  <h2 mat-dialog-title>Formulario de Ayuda</h2>
+  <mat-dialog-content>
+    <form #myform="ngForm" class="example-form" (ngSubmit)="onSubmit()">
+      <mat-form-field class="example-full-width">
+        <mat-select placeholder="Escoge un problema" 
+        name="feedback.problema" [(ngModel)]="feedback.problema" required>
+          <mat-option *ngFor="let prob of problemas" [value]="prob">
+            {{prob.descripcion}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <textarea matInput name="feedback.mensaje" placeholder="Ayúdenos con detalles" [(ngModel)]="feedback.mensaje" required></textarea>
+      </mat-form-field>
+
+      <button type="submit" mat-fab color="primary" [disabled]="myform.invalid">Enviar</button>
+    </form>
+  </mat-dialog-content>
+</div>

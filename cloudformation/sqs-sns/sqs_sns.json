@@ -1,0 +1,77 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "SQS SNS",
+    "Metadata": {},
+    "Parameters": {},
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "miColaNormal": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": {
+                "RedrivePolicy": {
+                    "deadLetterTargetArn": {
+                        "Fn::GetAtt": [
+                            "miColaDeError",
+                            "Arn"
+                        ]
+                    },
+                    "maxReceiveCount": 5
+                }
+            }
+        },
+        "miColaDeError": {
+            "Type": "AWS::SQS::Queue"
+        },
+        "miSNSNormal": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "Subscription": [
+                    {
+                        "Endpoint": {
+                            "Fn::GetAtt": [
+                                "miColaNormal",
+                                "Arn"
+                            ]
+                        },
+                        "Protocol": "sqs"
+                    }
+                ],
+                "TopicName": "miSNSCurso"
+            }
+        },
+        "miQueuePolicyDeColaNormal": {
+            "Type": "AWS::SQS::QueuePolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Id": "miQueuePolicyDeColaNormal",
+                    "Statement": [
+                        {
+                            "Sid": "Allow-SendMessage-To-Both-Queues-From-SNS-Topic",
+                            "Effect": "Allow",
+                            "Principal": "*",
+                            "Action": [
+                                "sqs:SendMessage"
+                            ],
+                            "Resource": "*",
+                            "Condition": {
+                                "ArnEquals": {
+                                    "aws:SourceArn": {
+                                        "Ref": "miSNSNormal"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Queues": [
+                    {
+                        "Ref": "miColaNormal"
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs": {}
+}

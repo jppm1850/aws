@@ -1,0 +1,16 @@
+agm-map {
+  height: 100%;
+  width: 100%;
+}
+
+.example-card {
+  max-width: 200px;
+}
+
+.example-header-image {
+  background-size: cover;
+}
+
+.example-full-width {
+  width: 100%;
+}
