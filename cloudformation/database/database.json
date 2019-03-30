@@ -3,7 +3,10 @@
     "Description": "Database",
     "Metadata": {},
     "Parameters": {
-
+        "PasswordMasterDB":{
+            "Type":"String",
+            "NoEcho": true
+        }
     },
     "Mappings": {},
     "Conditions": {},
@@ -17,7 +20,60 @@
                    {"Fn::ImportValue": "miRedPrivada2"}
                 ]
             }
-         }
+         },
+         "miBDCurso" : {
+            "Type" : "AWS::RDS::DBInstance",
+            "Properties" : {
+               "DBName" :  "bdCursoJAWS" ,
+               "DBInstanceIdentifier": "bdCursoJAWS",
+               "BackupRetentionPeriod": "0",
+               "StorageType": "gp2",
+               "AllocatedStorage" : "20",
+               "DBInstanceClass" : "db.t2.micro",
+               "MultiAZ":false,
+               "Engine" : "MySQL",
+               "EngineVersion" : "5.7.21",
+               "MasterUsername" : "root",
+               "MasterUserPassword" : { "Ref" : "PasswordMasterDB" },
+               "DBSubnetGroupName" : {
+                   "Ref":"dbSubnetGroup"
+               },
+               "VPCSecurityGroups":[{
+                   "Ref":"sgMysqlRDS"
+               }],
+               "Tags":[
+                   {
+                       "key":"Name",
+                       "Value": "Mysql Database"
+                   }
+               ]
+            },
+            "DeletionPolicy" : "Delete"
+         } ,
+         "firewallBaseDatos":{
+            "Type" : "AWS::EC2::SecurityGroup",
+                "Properties" : {
+                   "GroupDescription" : "permite conexion",
+                   "VpcId" : {"Ref" : "myVPC"},
+                   "SecurityGroupIngress" : [{
+                         "IpProtocol" : "tcp",
+                         "FromPort" : 22,
+                         "ToPort" : 22,
+                         "CidrIp" : "0.0.0.0/0"
+                      }],
+                   "SecurityGroupEgress" : [{
+                      "IpProtocol" : "-1",
+                      "CidrIp" : "0.0.0.0/0"
+                   }]
+                }
+          }
     },
-    "Outputs": {}
+    "Outputs": {
+        "endpointBD" : {
+            "Description":"endpoint para la conexion amysql",
+            "Value":{
+                "Ref":"miBDCurso"
+            },
+            "Export":{"Name":"miBDCurso"}
+    }
 }
