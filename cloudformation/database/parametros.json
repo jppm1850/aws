@@ -1,6 +1,6 @@
 [
     {
-      "ParameterKey": "passwordMasterDB",
-      "ParameterValue": "123456"
+      "ParameterKey": "passwordMasterBD",
+      "ParameterValue": "pedro123."
     }
   ]

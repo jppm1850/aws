@@ -3,77 +3,94 @@
     "Description": "Database",
     "Metadata": {},
     "Parameters": {
-        "PasswordMasterDB":{
-            "Type":"String",
+        "passwordMasterBD": {
+            "Type": "String",
             "NoEcho": true
         }
     },
     "Mappings": {},
     "Conditions": {},
     "Resources": {
-        "dbSubnetGroup" : {
-            "Type" : "AWS::RDS::DBSubnetGroup",
-            "Properties" : {
-               "DBSubnetGroupDescription" : "redes privadas de la vpc",
-               "SubnetIds" : [
-                   {"Fn::ImportValue": "miRedPrivada"},
-                   {"Fn::ImportValue": "miRedPrivada2"}
+        "dbSubnetGroupPrivado": {
+            "Type": "AWS::RDS::DBSubnetGroup",
+            "Properties": {
+                "DBSubnetGroupDescription": "redes privadas de la VPC",
+                "SubnetIds": [
+                    {
+                        "Fn::ImportValue": "miRedPrivada"
+                    },
+                    {
+                        "Fn::ImportValue": "miRedPrivada2"
+                    }
                 ]
             }
-         },
-         "miBDCurso" : {
-            "Type" : "AWS::RDS::DBInstance",
-            "Properties" : {
-               "DBName" :  "bdCursoJAWS" ,
-               "DBInstanceIdentifier": "bdCursoJAWS",
-               "BackupRetentionPeriod": "0",
-               "StorageType": "gp2",
-               "AllocatedStorage" : "20",
-               "DBInstanceClass" : "db.t2.micro",
-               "MultiAZ":false,
-               "Engine" : "MySQL",
-               "EngineVersion" : "5.7.21",
-               "MasterUsername" : "root",
-               "MasterUserPassword" : { "Ref" : "PasswordMasterDB" },
-               "DBSubnetGroupName" : {
-                   "Ref":"dbSubnetGroup"
-               },
-               "VPCSecurityGroups":[{
-                   "Ref":"sgMysqlRDS"
-               }],
-               "Tags":[
-                   {
-                       "key":"Name",
-                       "Value": "Mysql Database"
-                   }
-               ]
+        },
+        "miBDCurso": {
+            "Type": "AWS::RDS::DBInstance",
+            "Properties": {
+                "DBName": "bdCursoJAWS",
+                "DBInstanceIdentifier": "bdCursoJAWS",
+                "BackupRetentionPeriod": "0",
+                "AllocatedStorage": "20",
+                "StorageType": "gp2",
+                "DBInstanceClass": "db.t2.micro",
+                "MultiAZ": false,
+                "Engine": "MySQL",
+                "EngineVersion": "5.7.21",
+                "MasterUsername": "root",
+                "MasterUserPassword": {
+                    "Ref": "passwordMasterBD"
+                },
+                "DBSubnetGroupName": {
+                    "Ref": "dbSubnetGroupPrivado"
+                },
+                "VPCSecurityGroups": [
+                    {
+                        "Ref": "firewallBaseDatos"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "My SQL Database"
+                    }
+                ]
             },
-            "DeletionPolicy" : "Delete"
-         } ,
-         "firewallBaseDatos":{
-            "Type" : "AWS::EC2::SecurityGroup",
-                "Properties" : {
-                   "GroupDescription" : "permite conexion",
-                   "VpcId" : {"Ref" : "myVPC"},
-                   "SecurityGroupIngress" : [{
-                         "IpProtocol" : "tcp",
-                         "FromPort" : 22,
-                         "ToPort" : 22,
-                         "CidrIp" : "0.0.0.0/0"
-                      }],
-                   "SecurityGroupEgress" : [{
-                      "IpProtocol" : "-1",
-                      "CidrIp" : "0.0.0.0/0"
-                   }]
-                }
-          }
+            "DeletionPolicy": "Delete"
+        },
+        "firewallBaseDatos": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "permitir conexion en la vpc",
+                "VpcId": {
+                    "Fn::ImportValue": "miVpcCurso"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 3306,
+                        "ToPort": 3306,
+                        "CidrIp": "10.0.0.0/16"
+                    }
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": "-1",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        }
     },
     "Outputs": {
-        "endpointBD" : {
-            "Description":"endpoint para la conexion amysql",
-            "Value":{
-                "Ref":"miBDCurso"
-            },
-            "Export":{"Name":"miBDCurso"}
+        "endpointBD": {
+            "Description": "endpoint para conexion a mysql",
+            "Value": {
+                "Fn::GetAtt" : [
+                    "miBDCurso",
+                    "Endpoint.Address"
+                ]
+            }
+        }
     }
 }
