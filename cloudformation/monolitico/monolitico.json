@@ -190,6 +190,29 @@
                     }
                 ]
             }
+        },
+        "monoliticoAlbListenerRule": {
+            "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+            "Properties": {
+                "Actions": [
+                    {
+                        "Type": "forward",
+                        "TargetGroupArn": {
+                            "Ref": "monoliticoTargetGroup"
+                        }
+                    }
+                ],
+                "Conditions": [
+                    {
+                        "Field": "path-pattern",
+                        "Values": [
+                            "/api/*"
+                        ]
+                    }
+                ],
+                "ListenerArn": { "Fn::ImportValue": "arnListenerHttpMyBalancer" },
+                "Priority": 10
+            }
         }  
     },
     "Outputs": {

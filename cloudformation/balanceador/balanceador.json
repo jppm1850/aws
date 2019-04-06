@@ -1,0 +1,97 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "balanceador",
+    "Metadata": {},
+    "Parameters": {},
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "myBalancer": {
+            "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+            "Properties": {
+                "Name": "myBalancerCf",
+                "Subnets": [
+                    {
+                        "Fn::ImportValue": "miRedPublica"
+                    },
+                    {
+                        "Fn::ImportValue": "miRedPublica2"
+                    }
+                ],
+                "SecurityGroups": [
+                    {
+                        "Fn::ImportValue": "sgBalanceador"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "myBalancer"
+                    }
+                ]
+            }
+        },
+        "listenerHttpMyBalancer": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties": {
+                "DefaultActions": [
+                    {
+                        "Type": "forward",
+                        "TargetGroupArn": {
+                            "Ref": "defaultTargetGroup"
+                        }
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "myBalancer"
+                },
+                "Port": "80",
+                "Protocol": "HTTP"
+            }
+        },
+        "defaultTargetGroup": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "Properties": {
+                "Name": "default",
+                "Port": 80,
+                "Protocol": "HTTP",
+                "Targets": [],
+                "VpcId": {
+                    "Fn::ImportValue": "miVpcCurso"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "default"
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs": {
+        "URLBalanceador": {
+            "Description": "DNS para acceder al balanceador",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "http://",
+                        {
+                            "Fn::GetAtt": [
+                                "myBalancer",
+                                "DNSName"
+                            ]
+                        }
+                    ]
+                ]
+            }
+        },
+        "arnListenerHttpMyBalancer": {
+            "Description": "ARN del listener HTTP del balanceador",
+            "Value": {
+                "Ref": "listenerHttpMyBalancer"
+            },
+            "Export" : { "Name": "arnListenerHttpMyBalancer"}
+        }
+    }
+}

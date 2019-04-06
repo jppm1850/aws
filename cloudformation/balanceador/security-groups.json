@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Database",
+    "Description": "Security Groups",
     "Metadata": {},
     "Parameters": {},
     "Mappings": {},
@@ -9,20 +9,21 @@
         "ruleInBalanceadorToMonolito": {
             "Type": "AWS::EC2::SecurityGroupIngress",
             "Properties": {
-                "Description": "IN RULE - permite trafico balanceador",
+                "Description" : "IN RULE - permite trafico balanceador",
                 "GroupId": {
                     "Ref": "sgMonolito"
                 },
                 "IpProtocol": "-1",
                 "SourceSecurityGroupId": {
                     "Ref": "sgBalanceador"
+
                 }
             }
         },
         "sgMonolito": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
-                "GroupDescription": "monolitico security group",
+                "GroupDescription": "Permite trafico del balanceador (desde otra regla) y salida a internet",
                 "VpcId": {
                     "Fn::ImportValue": "miVpcCurso"
                 },
@@ -31,6 +32,12 @@
                     {
                         "IpProtocol": "-1",
                         "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "sgMonolito"
                     }
                 ]
             }
@@ -66,17 +73,15 @@
         }
     },
     "Outputs": {
-        "sgmonolito": {
-            "Description": "sg monolitico",
+        "sgMonolito": {
+            "Description": "Security Group del backend monolito",
             "Value": {
                 "Fn::GetAtt": [
                     "sgMonolito",
                     "GroupId"
                 ]
             },
-            "Export": {
-                "Name": "sgMonolito"
-            }
+            "Export" : { "Name" : "sgMonolito" }
         },
         "sgBalanceador": {
             "Description": "Security Group del balanceador",
@@ -86,9 +91,7 @@
                     "GroupId"
                 ]
             },
-            "Export": {
-                "Name": "sgBalanceador"
-            }
+            "Export" : { "Name" : "sgBalanceador" }
         }
     }
 }
