@@ -28,8 +28,8 @@
         "miBDCurso": {
             "Type": "AWS::RDS::DBInstance",
             "Properties": {
-                "DBName": "bdCursoJAWS",
-                "DBInstanceIdentifier": "bdCursoJAWS",
+                "DBName": "geoserviciosbd",
+                "DBInstanceIdentifier": "geoserviciosbd",
                 "BackupRetentionPeriod": "0",
                 "AllocatedStorage": "20",
                 "StorageType": "gp2",

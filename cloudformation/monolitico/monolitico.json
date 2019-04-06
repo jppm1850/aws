@@ -1,0 +1,197 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Monolitico",
+    "Metadata": {},
+    "Parameters": {     
+    },
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "roleMonolito": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ec2.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/"
+            }
+        },
+        "policyMonolito": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "policyMonolito",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "cognito-idp:AdminInitiateAuth",
+                                "cognito-idp:ConfirmForgotPassword",
+                                "cognito-idp:GlobalSignOut",
+                                "cognito-idp:AdminRespondToAuthChallenge",
+                                "cognito-idp:InitiateAuth",
+                                "cognito-idp:AdminGetUser"
+                            ],
+                            "Resource": { 
+                                "Fn::Sub" : "arn:aws:cognito-idp:${AWS::Region}:*:userpool/*"
+                            }
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "sns:Publish",
+                                "sns:ListTopics"
+                            ],
+                            "Resource": "*"
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "sqs:DeleteMessage",
+                                "sqs:ListQueues",
+                                "sqs:GetQueueUrl",
+                                "sqs:SendMessage"
+                            ],
+                            "Resource": "*"
+
+                        }
+                    ]
+                },
+                "Roles": [
+                    {
+                        "Ref": "roleMonolito"
+                    }
+                ]
+            }
+        },
+        "instanceProfileMonolito": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "roleMonolito"
+                    }
+                ]
+            }
+        },
+        "launchConfiguration": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Properties": {
+                "KeyName": "clase6",
+                "IamInstanceProfile": { "Ref": "instanceProfileMonolito" },
+                "ImageId": "ami-0080e4c5bc078760e",
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash -xe \n",
+                                "yum update -y \n",
+                                "yum install java-1.8.0 -y \n",
+                                "yum remove java-1.7.0-openjdk -y \n",
+                                "echo 'export host=bdcursojaws.cs8ty7dmxusr.us-east-1.rds.amazonaws.com' >> ~/.bash_profile \n",
+                                "echo 'export port=3306' >> ~/.bash_profile \n",
+                                "echo 'export database=geoserviciosbd' >> ~/.bash_profile \n",
+                                "echo 'export username=root' >> ~/.bash_profile \n",
+                                "echo 'export password=pedro123.' >> ~/.bash_profile \n",
+                                "echo 'export userPoolId=us-east-1_7h1DqbP3z' >> ~/.bash_profile \n",
+                                "echo 'export clientId=664lbpp5kf8eb2j5duvkug0hpt' >> ~/.bash_profile \n",
+                                "source ~/.bash_profile \n",
+                                "wget https://raw.githubusercontent.com/jppm1850/aws/master/apps/monolito/target/app-aws.jar \n",
+                                "nohup java -Djava.security.egd=file:/dev/./urandom -jar app-aws.jar & "
+                            ]
+                        ]
+                    }
+                },
+                "SecurityGroups": [
+                    { "Fn::ImportValue": "sgMonolito" }
+                ],
+                "InstanceType": "t2.micro"
+            }
+        },
+        "autoScalingMonolito": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "VPCZoneIdentifier": [
+                    {
+                        "Fn::ImportValue": "miRedPublica"
+                    },
+                    {
+                        "Fn::ImportValue": "miRedPublica2"
+                    }
+                ],
+                "LaunchConfigurationName": {
+                    "Ref": "launchConfiguration"
+                },
+                "MinSize": "0",
+                "DesiredCapacity": "1",
+                "MaxSize": "5",
+                "TargetGroupARNs": [
+                    {
+                        "Ref": "monoliticoTargetGroup"
+                    }
+                ],
+                "MetricsCollection": [
+                    {
+                        "Granularity": "1Minute",
+                        "Metrics": [
+                            "GroupMinSize",
+                            "GroupMaxSize"
+                        ]
+                    }
+                ]
+            }
+        },
+        "monoliticoTargetGroup": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "Properties": {
+                "HealthCheckIntervalSeconds": 30,
+                "HealthCheckProtocol": "HTTP",
+                "HealthCheckPath": "/status/verificar",
+                "HealthCheckTimeoutSeconds": 10,
+                "HealthyThresholdCount": 3,
+                "Matcher": {
+                    "HttpCode": "200-204"
+                },
+                "Name": "tgMonolitico",
+                "Port": 8080,
+                "Protocol": "HTTP",
+                "TargetGroupAttributes": [
+                    {
+                        "Key": "deregistration_delay.timeout_seconds",
+                        "Value": "20"
+                    }
+                ],
+                "Targets": [],
+                "UnhealthyThresholdCount": 3,
+                "VpcId": {
+                    "Fn::ImportValue": "miVpcCurso"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "monolitico"
+                    }
+                ]
+            }
+        }  
+    },
+    "Outputs": {
+        
+    }
+}

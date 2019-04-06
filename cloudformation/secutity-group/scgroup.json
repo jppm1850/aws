@@ -1,0 +1,41 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Database",
+    "Metadata": {},
+    "Parameters": {
+        
+    },
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        
+        "sgMonolito": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "monolitico security group",
+                "VpcId": {
+                    "Fn::ImportValue": "miVpcCurso"
+                },
+                "SecurityGroupIngress": [
+                    
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": "-1",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs": {
+        "sgmonolito" : {
+            "Description":"sg monolitico",
+            "Value":{
+                "Fn::GetAtt" : ["sgMonolito","GroupId"]
+                
+            },
+            "Export":{"Name":"sgMonolito"}
+    }
+    }
+}

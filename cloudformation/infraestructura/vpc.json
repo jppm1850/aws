@@ -135,7 +135,21 @@
                 "Ref":"miVpcCurso"
             },
             "Export":{"Name":"miVpcCurso"}
-    }
+        },
+        "miRedPublica" : {
+            "Description":"red publica 1",
+            "Value":{
+                "Ref":"miRedPublica"
+            },
+            "Export":{"Name":"miRedPublica"}
+        },
+        "miRedPublica2" : {
+                "Description":"red publica 2",
+                "Value":{
+                    "Ref":"miRedPublica2"
+                },
+                "Export":{"Name":"miRedPublica2"}
+        }
 
     }
 }
