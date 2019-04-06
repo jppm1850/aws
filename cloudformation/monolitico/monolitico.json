@@ -64,7 +64,8 @@
                                 "sqs:DeleteMessage",
                                 "sqs:ListQueues",
                                 "sqs:GetQueueUrl",
-                                "sqs:SendMessage"
+                                "sqs:SendMessage",
+                                "sqs:ReceiveMessage"
                             ],
                             "Resource": "*"
 
@@ -104,7 +105,7 @@
                                 "yum update -y \n",
                                 "yum install java-1.8.0 -y \n",
                                 "yum remove java-1.7.0-openjdk -y \n",
-                                "echo 'export host=bdcursojaws.cs8ty7dmxusr.us-east-1.rds.amazonaws.com' >> ~/.bash_profile \n",
+                                "echo 'export host=geoserviciosbd.cs8ty7dmxusr.us-east-1.rds.amazonaws.com' >> ~/.bash_profile \n",
                                 "echo 'export port=3306' >> ~/.bash_profile \n",
                                 "echo 'export database=geoserviciosbd' >> ~/.bash_profile \n",
                                 "echo 'export username=root' >> ~/.bash_profile \n",
