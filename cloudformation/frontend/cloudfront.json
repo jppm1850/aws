@@ -1,0 +1,126 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "frontend con s3 + cloudfront",
+    "Metadata": {},
+    "Parameters": {},
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "myS3FrontendAngular": {
+            "Type": "AWS::S3::Bucket"
+        },
+        "BucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Id": "s3PolicyFrontend",
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "readForCloudFront",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "CanonicalUser": {
+                                    "Fn::GetAtt": [
+                                        "myCloudfrontoriginaccessidentity",
+                                        "S3CanonicalUserId"
+                                    ]
+                                }
+                            },
+                            "Action": "s3:GetObject",
+                            "Resource": {
+                                "Fn::Sub": "arn:aws:s3:::${myS3FrontendAngular}/*"
+                            }
+                        }
+                    ]
+                },
+                "Bucket": {
+                    "Ref": "myS3FrontendAngular"
+                }
+            }
+        },
+        "myCloudfrontoriginaccessidentity": {
+            "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+            "Properties": {
+                "CloudFrontOriginAccessIdentityConfig": {
+                    "Comment": {
+                        "Ref": "myS3FrontendAngular"
+                    }
+                }
+            }
+        },
+        "myDistributionFrontendAngular": {
+            "Type": "AWS::CloudFront::Distribution",
+            "DependsOn": [
+                "myCloudfrontoriginaccessidentity",
+                "myS3FrontendAngular",
+                "BucketPolicy"
+            ],
+            "Properties": {
+                "DistributionConfig": {
+                    "Origins": [
+                        {
+                            "DomainName": {
+                                "Fn::GetAtt": [
+                                    "myS3FrontendAngular",
+                                    "DomainName"
+                                ]
+                            },
+                            "Id": "s3Origin",
+                            "S3OriginConfig": {
+                                "OriginAccessIdentity": {
+                                    "Fn::Sub": "origin-access-identity/cloudfront/${myCloudfrontoriginaccessidentity}"
+                                }
+                            }
+                        }
+                    ],
+                    "PriceClass": "PriceClass_100",
+                    "Enabled": "true",
+                    "DefaultRootObject": "/index.html",
+                    "CustomErrorResponses": [{
+                        "ErrorCode": 403,
+                        "ResponseCode": 200,
+                        "ResponsePagePath": "/index.html"
+                    }],
+                    "HttpVersion": "http2",
+                    "DefaultCacheBehavior": {
+                        "AllowedMethods": [
+                            "HEAD",
+                            "DELETE",
+                            "GET",
+                            "OPTIONS",
+                            "POST",
+                            "PUT",
+                            "PATCH"
+                        ],
+                        "Compress": true,
+                        "TargetOriginId": "s3Origin",
+                        "CachedMethods" : [
+                            "GET",
+                            "HEAD",
+                            "OPTIONS"
+                        ],
+                        "ForwardedValues": {
+                            "QueryString": "false",
+                            "Cookies": {
+                                "Forward": "none"
+                            }
+                        },
+                        "ViewerProtocolPolicy": "https-only"
+                    }
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "myDistributionFrontendAngular": {
+            "Description": "DNS de cloudfront angular",
+            "Value": {
+                "Fn::GetAtt" : [
+                    "myDistributionFrontendAngular",
+                    "DomainName"
+                ]
+            }
+        }
+    }
+}

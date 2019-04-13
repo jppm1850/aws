@@ -1,0 +1,66 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "ApiGateway para balanceador app",
+    "Metadata": {},
+    "Parameters": {
+
+    },
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "geoServiciosApi": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+                "Name": "GeoServicios Api",
+                "Description": "API usada  requests",
+                "FailOnWarnings": true,
+                "BodyS3Location": {
+                    "Bucket": "swagger-monolito",
+                    "Key": "apiGatewayWithAWS.json"
+                }
+            }
+        },
+        "deploymentGeoServiciosApi": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+                "RestApiId": {
+                    "Ref": "geoServiciosApi"
+                },
+                "Description": "My deployment"
+            }
+        },
+        "prodStage": {
+            "Type": "AWS::ApiGateway::Stage",
+            "Properties": {
+                "StageName": "prod",
+                "Description": "Prod Stage",
+                "RestApiId": {
+                    "Ref": "geoServiciosApi"
+                },
+                "DeploymentId": {
+                    "Ref": "deploymentGeoServiciosApi"
+                },
+                "Variables": {
+                    "Stack": "prod"
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "geoServiciosApiURL": {
+            "Description": "DNS API GeoServicios",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "https://",
+                        {"Ref":"geoServiciosApi"},
+                        ".execute-api.",
+                        {"Ref":"AWS::Region"},
+                        ".amazonaws.com"
+                    ]
+                ]
+            }
+        }
+    }
+}
