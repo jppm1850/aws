@@ -1,6 +1,10 @@
 .idea/
 .project
-
+classes/
+generated-sources/
+maven-archiver/
+maven-status/
+app-aws.jar.original
 node_modules/
 .settings/
 .classpath
