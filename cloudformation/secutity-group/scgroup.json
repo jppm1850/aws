@@ -22,7 +22,7 @@
         "sgMonolito": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
-                "GroupDescription": "monolitico security group",
+                "GroupDescription": "Permite trafico del balanceador (desde otra regla) y salida a internet",
                 "VpcId": {
                     "Fn::ImportValue": "miVpcCurso"
                 },
