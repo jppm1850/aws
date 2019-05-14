@@ -54,7 +54,7 @@ import { ErrorComponent } from './pages/login/error/error.component';
     HttpClientModule,
     //API KEY de google maps configurado en google cloud platform
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyDRlxhDKnHX5ie8Y3gJe1YOYpC4dWpa0no'
+      apiKey: 'AIzaSyCFoH7nAvzQhy5gXwej2KlOZXeYr9UoHyU'
     })
   ],
   providers: [
